@@ -33,7 +33,7 @@ The model is not intended to determine why a page declined or to establish that 
 
 ## 2. Data safety
 
-The modeling dataset contains 30,000 content records across 32 clients. Each record contains content-performance and search-related signals used to assess whether the content was classified as declining.
+The modeling dataset used for this analysis contains 30,000 content records across 32 clients. Each record contains content-performance and search-related signals used to assess whether the content was classified as declining.
 
 The final model used these eight features:
 
