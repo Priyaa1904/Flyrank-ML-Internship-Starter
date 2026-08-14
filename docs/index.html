@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Content Decline Signals: A Validation-Aware ML Study</title>
+
+<style>
+    :root {
+        --bg: #f7f8fa;
+        --surface: #ffffff;
+        --text: #172033;
+        --muted: #667085;
+        --line: #e5e7eb;
+        --accent: #3157d5;
+        --accent-soft: #eef2ff;
+        --dark: #111827;
+        --success: #16794c;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        margin: 0;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                     Roboto, Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+    }
+
+    a {
+        color: var(--accent);
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    .hero {
+        background: var(--dark);
+        color: white;
+        padding: 90px 24px 80px;
+    }
+
+    .hero-inner {
+        max-width: 1050px;
+        margin: auto;
+    }
+
+    .eyebrow {
+        display: inline-block;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #aebcff;
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        font-size: clamp(38px, 6vw, 68px);
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+        max-width: 900px;
+        margin: 0 0 25px;
+    }
+
+    .subtitle {
+        max-width: 760px;
+        color: #d1d5db;
+        font-size: 19px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 32px;
+    }
+
+    .meta span {
+        border: 1px solid #374151;
+        background: #1f2937;
+        padding: 7px 13px;
+        border-radius: 999px;
+        font-size: 13px;
+        color: #d1d5db;
+    }
+
+    .container {
+        max-width: 1050px;
+        margin: auto;
+        padding: 0 24px;
+    }
+
+    main {
+        padding: 55px 0 90px;
+    }
+
+    section {
+        margin-bottom: 75px;
+    }
+
+    h2 {
+        font-size: 30px;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+        margin: 0 0 22px;
+    }
+
+    h3 {
+        font-size: 20px;
+        margin-top: 32px;
+        margin-bottom: 10px;
+    }
+
+    p {
+        max-width: 850px;
+    }
+
+    .abstract {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--accent);
+        padding: 30px 34px;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(16, 24, 40, 0.04);
+    }
+
+    .abstract p {
+        margin: 0;
+        font-size: 17px;
+    }
+
+    .finding-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin: 30px 0;
+    }
+
+    .finding {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 24px;
+    }
+
+    .finding .number {
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--accent);
+    }
+
+    .finding strong {
+        display: block;
+        margin-top: 4px;
+    }
+
+    .finding small {
+        color: var(--muted);
+    }
+
+    .callout {
+        background: var(--accent-soft);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin: 28px 0;
+    }
+
+    .callout strong {
+        color: #243b9c;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 25px 0;
+    }
+
+    th, td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+    }
+
+    th {
+        background: #f3f4f6;
+        font-weight: 700;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    .figure {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px;
+        margin: 30px 0;
+        box-shadow: 0 8px 30px rgba(16, 24, 40, 0.04);
+    }
+
+    .figure img {
+        display: block;
+        width: 100%;
+        max-width: 850px;
+        margin: auto;
+        height: auto;
+        border-radius: 8px;
+    }
+
+    figcaption {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 16px 5px 0;
+    }
+
+    .two-column {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+    }
+
+    .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 25px;
+    }
+
+    .card h3 {
+        margin-top: 0;
+    }
+
+    ul {
+        padding-left: 22px;
+    }
+
+    li {
+        margin-bottom: 8px;
+    }
+
+    .action {
+        border-left: 4px solid var(--accent);
+        background: var(--surface);
+        border-radius: 0 10px 10px 0;
+        padding: 20px 24px;
+        margin: 16px 0;
+        border-top: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+    }
+
+    .action h3 {
+        margin: 0 0 5px;
+    }
+
+    .warning {
+        border-left-color: #d97706;
+        background: #fffbeb;
+    }
+
+    .code-like {
+        background: #f3f4f6;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 3px 7px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.9em;
+    }
+
+    .footer {
+        background: var(--dark);
+        color: #d1d5db;
+        padding: 45px 24px;
+    }
+
+    .footer-inner {
+        max-width: 1050px;
+        margin: auto;
+    }
+
+    .footer h2 {
+        color: white;
+    }
+
+    .footer a {
+        color: #b9c5ff;
+    }
+
+    .small {
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    @media (max-width: 750px) {
+        .hero {
+            padding: 65px 20px 60px;
+        }
+
+        .container {
+            padding: 0 18px;
+        }
+
+        main {
+            padding-top: 40px;
+        }
+
+        .finding-grid,
+        .two-column {
+            grid-template-columns: 1fr;
+        }
+
+        h2 {
+            font-size: 26px;
+        }
+
+        .abstract {
+            padding: 23px;
+        }
+
+        th, td {
+            padding: 11px;
+            font-size: 14px;
+        }
+    }
+</style>
+</head>
+
+
+<body>
+
+<header class="hero">
+    <div class="hero-inner">
+
+        <div class="eyebrow">
+            FlyRank ML Internship · Research Capstone
+        </div>
+
+        <h1>
+            Content Decline Signals:
+            A Validation-Aware ML Study
+        </h1>
+
+        <p class="subtitle">
+            Using observable content and search-performance signals to rank
+            pages for human review — with explicit leakage checks and
+            client-grouped validation.
+        </p>
+
+        <div class="meta">
+            <span>Machine Learning</span>
+            <span>Logistic Regression</span>
+            <span>Precision@10</span>
+            <span>30,000 content records</span>
+            <span>Public-safe analysis</span>
+        </div>
+
+    </div>
+</header>
+
+
+<main>
+<div class="container">
+
+
+<!-- ===================================================== -->
+<!-- 0. ABSTRACT -->
+<!-- ===================================================== -->
+
+<section id="abstract">
+
+    <h2>Abstract</h2>
+
+    <div class="abstract">
+
+        <p>
+            This study asks whether observable content and search-performance
+            signals can provide a useful ranking signal for identifying content
+            items that may warrant review for potential decline. The analysis
+            uses a 30,000-record modeling dataset spanning 32 pseudonymized
+            clients and eight observable features related to freshness,
+            visibility, engagement, content length, and search-market signals.
+            A Logistic Regression model was compared with a transparent
+            Week-4 baseline and evaluated using both a random row-level split
+            and a stricter client-grouped split. The model measured
+            <strong>0.40 Precision@10 under client-grouped validation</strong>,
+            compared with 0.30 for the Week-4 baseline, while the random split
+            produced a higher 0.60 result that was treated as a diagnostic
+            rather than the primary generalization claim. The resulting score
+            and action queue are intended as <strong>decision-support for
+            human content review</strong>, not as an autonomous content-action
+            system or evidence of causal effects.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- 1. PROBLEM -->
+<!-- ===================================================== -->
+
+<section id="problem">
+
+    <h2>1. Introduction / Problem</h2>
+
+    <p>
+        Content teams often have more pages to review than they can inspect
+        manually. The practical question is therefore not simply whether a
+        page is performing well or poorly, but which pages deserve attention
+        first.
+    </p>
+
+    <p>
+        This project approaches that problem as a ranking and decision-support
+        task. Each content item is assigned a model score representing its
+        estimated probability of belonging to the declining class. The scores
+        can then be used to prioritize items for human review.
+    </p>
+
+    <div class="callout">
+        <strong>The decision this supports:</strong>
+        Which content items should a human reviewer inspect first,
+        given limited editorial attention?
+    </div>
+
+    <p>
+        A false positive can consume editorial resources on a page that does
+        not require intervention. A false negative can cause a potentially
+        important page to receive less attention than it otherwise might.
+        Machine learning is useful here because several observable signals
+        can be considered simultaneously.
+    </p>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- 2. DATA -->
+<!-- ===================================================== -->
+
+<section id="data">
+
+    <h2>2. Data</h2>
+
+    <p>
+        The modeling dataset used for this analysis contains
+        <strong>30,000 content records across 32 clients</strong>.
+        Client and content identifiers are pseudonymous and were not used
+        as predictive features.
+    </p>
+
+    <p>
+        The target is derived from the recent 30-day trend relative to the
+        preceding 30-day period. A content item is classified as declining
+        when the corresponding observed trend direction is down.
+    </p>
+
+    <h3>Model features</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="code-like">days_since_last_update</span></td>
+                <td>Content freshness</td>
+            </tr>
+            <tr>
+                <td><span class="code-like">impressions_90d</span></td>
+                <td>Observed visibility</td>
+            </tr>
+            <tr>
+                <td><span class="code-like">ctr</span></td>
+                <td>Observed engagement</td>
+            </tr>
+            <tr>
+                <td><span class="code-like">avg_position</span></td>
+                <td>Observed search position</td>
+            </tr>
+            <tr>
+                <td><span class="code-like">word_count</span></td>
+                <td>Content length</td>
+            </tr>
+            <tr>
+                <td><span class="code-like">search_volume</span></td>
+                <td>Search-market signal</td>
+            </tr>
+            <tr>
+                <td><span class="code-like">competition</span></td>
+                <td>Search competition signal</td>
+            </tr>
+            <tr>
+                <td><span class="code-like">cpc</span></td>
+                <td>Search-market signal</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>What was excluded</h3>
+
+    <p>
+        Target-derived fields including
+        <span class="code-like">trend_direction</span> and
+        <span class="code-like">trend_pct</span> were excluded.
+        The target itself and the decision-derived
+        <span class="code-like">is_declining_label</span> were also not
+        used as model inputs.
+    </p>
+
+    <p>
+        Client identifiers were used for grouped validation only.
+        They were never treated as predictive features.
+    </p>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- 3. METHODOLOGY -->
+<!-- ===================================================== -->
+
+<section id="methodology">
+
+    <h2>3. Methodology</h2>
+
+    <h3>Model</h3>
+
+    <p>
+        Logistic Regression was selected because this is a binary
+        classification problem and the resulting coefficients provide an
+        interpretable view of the signals used by the model.
+    </p>
+
+    <p>
+        The preprocessing pipeline uses median imputation, feature
+        standardization, and Logistic Regression with
+        <span class="code-like">max_iter=1000</span> and
+        <span class="code-like">random_state=42</span>.
+    </p>
+
+    <h3>Evaluation metric</h3>
+
+    <p>
+        The primary metric is <strong>Precision@10</strong>. This reflects
+        the practical use case: ranking a small set of content items for
+        initial human review.
+    </p>
+
+    <h3>Validation design</h3>
+
+    <p>
+        Two validation designs were examined. A random row-level split was
+        used as a reference, while a client-grouped split was used as the
+        more conservative evaluation because no client appears in both its
+        training and test sets.
+    </p>
+
+    <h3>Leakage controls</h3>
+
+    <p>
+        A deliberate leakage experiment added
+        <span class="code-like">trend_pct</span>, a target-related feature,
+        to the model. Precision@10 increased to <strong>1.00</strong>.
+        This result was not treated as an improvement; it was used as a
+        receipt showing how target-derived information can artificially
+        inflate performance.
+    </p>
+
+    <p>
+        The final model therefore excludes target-derived features.
+        Potential temporal overlap involving 90-day signals was also flagged
+        for review against an exact prediction timestamp rather than being
+        presented as proven leakage.
+    </p>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- 4. RESULTS -->
+<!-- ===================================================== -->
+
+<section id="results">
+
+    <h2>4. Results</h2>
+
+    <div class="finding-grid">
+
+        <div class="finding">
+            <div class="number">0.40</div>
+            <strong>Grouped Precision@10</strong>
+            <small>Primary conservative evaluation</small>
+        </div>
+
+        <div class="finding">
+            <div class="number">0.30</div>
+            <strong>Week-4 baseline</strong>
+            <small>Transparent comparison point</small>
+        </div>
+
+        <div class="finding">
+            <div class="number">0.60</div>
+            <strong>Random-split Precision@10</strong>
+            <small>Diagnostic, not headline generalization</small>
+        </div>
+
+    </div>
+
+
+    <figure class="figure">
+
+        <img
+            src="../work/figures/model_vs_baseline.png"
+            alt="Bar chart comparing Week-4 baseline Precision@10 of 0.30 with Logistic Regression Precision@10 of 0.40"
+        >
+
+        <figcaption>
+            <strong>Figure 1 — Model versus baseline.</strong>
+            Under the comparable grouped evaluation, Logistic Regression
+            measured 0.40 Precision@10 versus 0.30 for the Week-4 baseline,
+            a measured difference of 0.10 Precision@10 points.
+        </figcaption>
+
+    </figure>
+
+
+    <figure class="figure">
+
+        <img
+            src="../work/figures/validation_comparison.png"
+            alt="Bar chart comparing random row-level Precision@10 of 0.60 with client-grouped Precision@10 of 0.40"
+        >
+
+        <figcaption>
+            <strong>Figure 2 — Validation sensitivity.</strong>
+            Precision@10 decreased from 0.60 under the random row-level split
+            to 0.40 when evaluation was grouped by client, showing that the
+            validation design materially affects the measured result.
+        </figcaption>
+
+    </figure>
+
+
+    <h3>Model versus baseline</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Approach</th>
+                <th>Precision@10</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Week-4 baseline</td>
+                <td>0.30</td>
+            </tr>
+            <tr>
+                <td><strong>Logistic Regression</strong></td>
+                <td><strong>0.40</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <h3>Validation comparison</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Evaluation design</th>
+                <th>Test rows</th>
+                <th>Test base rate</th>
+                <th>Precision@10</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Random row-level</td>
+                <td>6,000</td>
+                <td>0.542</td>
+                <td>0.60</td>
+            </tr>
+            <tr>
+                <td>Client-grouped</td>
+                <td>6,163</td>
+                <td>0.511</td>
+                <td><strong>0.40</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        There were <strong>0 clients shared between the grouped training and
+        test sets</strong>. This makes the grouped result the more conservative
+        measure of performance on clients not observed during training.
+    </p>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- 5. INTERPRETATION -->
+<!-- ===================================================== -->
+
+<section id="interpretation">
+
+    <h2>5. Interpretation</h2>
+
+    <p>
+        The fitted model relied most strongly, by absolute coefficient
+        magnitude, on CTR, content freshness, and word count.
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>Coefficient</th>
+                <th>Observed model direction</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="code-like">ctr</span></td>
+                <td>-0.197</td>
+                <td>Negative</td>
+            </tr>
+            <tr>
+                <td><span class="code-like">days_since_last_update</span></td>
+                <td>0.189</td>
+                <td>Positive</td>
+            </tr>
+            <tr>
+                <td><span class="code-like">word_count</span></td>
+                <td>0.133</td>
+                <td>Positive</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        These coefficients describe associations learned by the fitted model.
+        They do not show that changing any individual feature will cause the
+        target outcome to change.
+    </p>
+
+    <div class="callout">
+        <strong>Important finding:</strong>
+        the validation gap is itself informative. The measured result was
+        sensitive to whether client identity was shared across the training
+        and test populations.
+    </div>
+
+    <p>
+        The analysis also produced false positives and false negatives,
+        including predictions close to the classification boundary. This
+        indicates that the available signals do not perfectly separate
+        declining and non-declining content.
+    </p>
+
+    <p>
+        The study therefore does not establish that refreshing content,
+        increasing word count, improving CTR, or changing another individual
+        feature will cause better search performance.
+    </p>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- 6. LIMITATIONS -->
+<!-- ===================================================== -->
+
+<section id="limitations">
+
+    <h2>6. Limitations & Honest Framing</h2>
+
+    <div class="two-column">
+
+        <div class="card">
+            <h3>Observational evidence</h3>
+            <p>
+                The analysis observes patterns in the available data. It does
+                not use a controlled intervention, so it cannot establish
+                causal effects.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Validation sensitivity</h3>
+            <p>
+                Random row-level validation produced a higher measured result
+                than client-grouped validation. The grouped result is therefore
+                used as the more conservative generalization claim.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Temporal overlap</h3>
+            <p>
+                Some 90-day signals were flagged for temporal-overlap review.
+                Exact feature availability relative to the prediction timestamp
+                should be confirmed before production use.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Human judgment remains necessary</h3>
+            <p>
+                Model scores cannot capture every editorial, business, legal,
+                brand, or search-intent consideration needed for a content
+                decision.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="callout">
+        <strong>Scope of the claim:</strong>
+        This model provides a measured ranking signal for decision-support
+        within the analyzed dataset. It does not predict Google's algorithm,
+        prove why content declined, or guarantee that an editorial intervention
+        will improve performance.
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- 7. RECOMMENDATIONS -->
+<!-- ===================================================== -->
+
+<section id="recommendations">
+
+    <h2>7. Ranked Recommendations</h2>
+
+    <p>
+        The model output was converted into a ranked action queue containing
+        30,000 content items. The queue is intended to prioritize human
+        attention rather than execute content changes automatically.
+    </p>
+
+
+    <figure class="figure">
+
+        <img
+            src="../work/figures/action_queue_distribution.png"
+            alt="Donut chart showing 59.3 percent Review, 35.25 percent Investigate, and 5.45 percent Refresh"
+        >
+
+        <figcaption>
+            <strong>Figure 3 — Ranked action queue.</strong>
+            Most items are categorized for review or investigation, while a
+            smaller share is identified as a potential refresh candidate.
+        </figcaption>
+
+    </figure>
+
+
+    <table>
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Records</th>
+                <th>Share</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>REVIEW</td>
+                <td>17,790</td>
+                <td>59.30%</td>
+            </tr>
+            <tr>
+                <td>INVESTIGATE</td>
+                <td>10,576</td>
+                <td>35.25%</td>
+            </tr>
+            <tr>
+                <td>REFRESH</td>
+                <td>1,634</td>
+                <td>5.45%</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <div class="action">
+        <h3>1. Review potential decline signals</h3>
+        <p>
+            Start with items receiving the REVIEW designation. Verify the
+            observed signals and determine whether the page actually requires
+            attention.
+        </p>
+    </div>
+
+
+    <div class="action">
+        <h3>2. Investigate fresh content showing decline signals</h3>
+        <p>
+            The FRESH_DECLINING reason code accounts for 10,576 items.
+            Review search intent, recent changes, page purpose, and performance
+            context before considering intervention.
+        </p>
+    </div>
+
+
+    <div class="action">
+        <h3>3. Consider stale, visible content for closer review</h3>
+        <p>
+            The STALE_HIGH_VISIBILITY category contains 1,634 items. These
+            pages may deserve closer human inspection before a possible refresh.
+        </p>
+    </div>
+
+
+    <h3>Recommended workflow</h3>
+
+    <div class="callout">
+        <strong>Rank → Review → Investigate → Decide → Measure</strong>
+    </div>
+
+
+    <h3>Human-review requirements</h3>
+
+    <ul>
+        <li>Check current page relevance.</li>
+        <li>Verify observed performance signals.</li>
+        <li>Check recent content changes.</li>
+        <li>Review search intent and page purpose.</li>
+        <li>Check business, editorial, legal, and brand context.</li>
+        <li>Assess effort versus potential value.</li>
+    </ul>
+
+
+    <h3>What should not be automated</h3>
+
+    <div class="action warning">
+        <ul>
+            <li>Automatic publishing or rewriting.</li>
+            <li>Automatic deletion or redirection.</li>
+            <li>Automatic changes to factual or sensitive claims.</li>
+            <li>Automatic legal, medical, or financial decisions.</li>
+            <li>Treating the action score as causal evidence.</li>
+            <li>Overriding human reviewers.</li>
+        </ul>
+    </div>
+
+    <p>
+        No content action should be executed solely from the queue.
+        A human reviewer must make the final decision.
+    </p>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- 8. REPRODUCIBILITY -->
+<!-- ===================================================== -->
+
+<section id="reproducibility">
+
+    <h2>8. Reproducibility</h2>
+
+    <p>
+        The project is organized as a sequence of notebooks covering baseline
+        construction, model training, validation auditing, and action-playbook
+        development.
+    </p>
+
+    <h3>Key notebooks</h3>
+
+    <ul>
+        <li>
+            <a href="../work/notebooks/capstone.ipynb">
+                capstone.ipynb
+            </a>
+            — final capstone analysis and paper artifacts
+        </li>
+
+        <li>
+            <a href="../work/notebooks/w06_validation_audit.ipynb">
+                w06_validation_audit.ipynb
+            </a>
+            — grouped validation, leakage audit, and error analysis
+        </li>
+
+        <li>
+            <a href="../work/notebooks/w07_action_playbook.ipynb">
+                w07_action_playbook.ipynb
+            </a>
+            — ranked action queue, human-review rules, and monitoring guidance
+        </li>
+    </ul>
+
+
+    <h3>Key evaluation receipts</h3>
+
+    <ul>
+        <li>Week-4 baseline Precision@10: <strong>0.30</strong></li>
+        <li>Random row-level Precision@10: <strong>0.60</strong></li>
+        <li>Client-grouped Precision@10: <strong>0.40</strong></li>
+        <li>Random test base rate: <strong>0.542</strong></li>
+        <li>Grouped test base rate: <strong>0.511</strong></li>
+        <li>Clients shared between grouped train/test: <strong>0</strong></li>
+        <li>Deliberate leakage test with trend_pct: <strong>1.00</strong></li>
+    </ul>
+
+
+    <h3>Action-playbook artifact</h3>
+
+    <p>
+        The Week-7 notebook generates the ranked action queue at:
+    </p>
+
+    <p>
+        <span class="code-like">
+            work/outputs/ranked_action_queue.csv
+        </span>
+    </p>
+
+    <p>
+        The queue contains 30,000 rows and 9 exported columns. It is regenerated
+        by the notebook rather than treated as a manually maintained dataset.
+    </p>
+
+
+    <p>
+        The complete project repository is available on
+        <a href="https://github.com/Priyaa1904/Flyrank-ML-Internship">
+            GitHub
+        </a>.
+    </p>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- 9. ACKNOWLEDGMENTS -->
+<!-- ===================================================== -->
+
+<section id="acknowledgments">
+
+    <h2>9. Acknowledgments & Data Credit</h2>
+
+    <div class="abstract">
+
+        <p>
+            Built on the
+            <strong>FlyRank ML Internship dataset</strong>.
+        </p>
+
+        <p>
+            Data source:
+            <a href="https://flyrank.ai">
+                FlyRank
+            </a>
+        </p>
+
+    </div>
+
+</section>
+
+
+</div>
+</main>
+
+
+<footer class="footer">
+
+    <div class="footer-inner">
+
+        <h2>Research takeaway</h2>
+
+        <p>
+            The useful result is not simply a high model score. It is a
+            validation-aware ranking signal that measured 0.40 Precision@10
+            under client-grouped evaluation, compared with 0.30 for the
+            Week-4 baseline, while remaining explicitly bounded by leakage,
+            validation, and causal limitations.
+        </p>
+
+        <p class="small">
+            This page presents an internship research capstone as
+            decision-support, not an autonomous production system.
+        </p>
+
+    </div>
+
+</footer>
+
+</body>
+</html>
